@@ -1,5 +1,7 @@
 package com.nvvi9.spoticloud.di
 
+import com.nvvi9.spoticloud.database.VideoInfoDataSource
+import com.nvvi9.spoticloud.database.VideoInfoDataSourceImpl
 import com.nvvi9.spoticloud.network.youtube.YouTubeNetworkDataSource
 import com.nvvi9.spoticloud.network.youtube.YouTubeNetworkDataSourceImpl
 import com.nvvi9.spoticloud.network.ytstream.YTStreamDataSource
@@ -18,4 +20,7 @@ interface DataSourceModule {
 
     @Binds
     fun YouTubeNetworkDataSourceImpl.bindsYouTubeNetworkDataSource(): YouTubeNetworkDataSource
+
+    @Binds
+    fun VideoInfoDataSourceImpl.bindVideoInfoDataSource(): VideoInfoDataSource
 }
