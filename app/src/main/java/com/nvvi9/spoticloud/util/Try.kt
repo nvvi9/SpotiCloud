@@ -1,5 +1,10 @@
 package com.nvvi9.spoticloud.util
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
+
 sealed interface Try<out T> {
     data class Success<T>(val data: T) : Try<T>
     data class Failure(val t: Throwable) : Try<Nothing>
@@ -29,3 +34,19 @@ inline fun <T> runSafely(action: () -> T): Try<T> = try {
 } catch (t: Throwable) {
     Try.Failure(t)
 }
+
+fun <T> List<Try<T>>.unzip(): Try<List<T>> {
+    val result = mutableListOf<T>()
+    for (tryValue in this) {
+        when (tryValue) {
+            is Try.Failure -> return tryValue
+            is Try.Success -> result.add(tryValue.data)
+        }
+    }
+    return Try.Success(result)
+}
+
+fun <T> Flow<Try<T>>.asUiStateFlow(): Flow<UiState<T>> =
+    this.map { tryValue -> tryValue.fold({ UiState.Success(it) }, { UiState.Error() }) }
+        .onStart { emit(UiState.Loading) }
+        .catch { emit(UiState.Error()) }

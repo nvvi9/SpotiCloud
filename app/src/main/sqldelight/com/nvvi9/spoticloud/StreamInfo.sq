@@ -1,0 +1,43 @@
+import com.nvvi9.ytstream.model.codecs.AudioCodec;
+import com.nvvi9.ytstream.model.codecs.VideoCodec;
+import com.nvvi9.ytstream.model.streams.Extension;
+import com.nvvi9.ytstream.model.streams.StreamType;
+
+CREATE TABLE StreamInfo (
+  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT DEFAULT 1,
+  videoId TEXT NOT NULL,
+  url TEXT NOT NULL,
+  itag INTEGER NOT NULL,
+  streamType TEXT AS StreamType NOT NULL,
+  extension TEXT AS Extension NOT NULL,
+  audioCodec TEXT AS AudioCodec,
+  videoCodec TEXT AS VideoCodec,
+  quality INTEGER,
+  bitrate INTEGER,
+  fps INTEGER,
+  expiresInSeconds INTEGER NOT NULL,
+  FOREIGN KEY (videoId) REFERENCES VideoInfo(id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS index_stream_info_video_id ON StreamInfo(videoId);
+
+insertStreamInfo {
+  INSERT OR REPLACE
+  INTO StreamInfo (videoId, url, itag, streamType, extension, audioCodec, videoCodec, quality, bitrate, fps, expiresInSeconds)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+  SELECT * FROM StreamInfo WHERE id = last_inserted_rowid() LIMIT 1;
+}
+
+selectByVideoId:
+SELECT *
+FROM StreamInfo
+WHERE videoId = ?;
+
+selectLastInsertedId:
+SELECT last_insert_rowid();
+
+updateUrl:
+UPDATE StreamInfo
+SET url = :url, expiresInSeconds = :expiresInSeconds
+WHERE id = :id;

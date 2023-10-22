@@ -14,4 +14,5 @@ object UseCasesModule {
     @Provides
     fun provideYouTubeVideoItemsUseCase(youTubeRepository: YouTubeRepository): GetYouTubeVideoItemsUseCase =
         GetYouTubeVideoItemsUseCase(youTubeRepository)
+
 }

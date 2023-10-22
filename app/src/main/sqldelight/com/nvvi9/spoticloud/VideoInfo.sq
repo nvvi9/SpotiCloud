@@ -1,0 +1,35 @@
+CREATE TABLE VideoInfo (
+  id TEXT NOT NULL PRIMARY KEY,
+  title TEXT NOT NULL,
+  channel TEXT NOT NULL,
+  channelId TEXT NOT NULL,
+  duration INTEGER NOT NULL,
+  viewCount INTEGER NOT NULL
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS index_video_info_id ON VideoInfo(id);
+
+insertVideoInfo{
+  INSERT OR REPLACE
+  INTO VideoInfo
+  VALUES (?, ?, ?, ?, ?, ?);
+
+  SELECT * FROM VideoInfo WHERE id = last_inserted_rowid() LIMIT 1;
+}
+
+selecAll:
+SELECT *
+FROM VideoInfo;
+
+selectVideoInfoWithStreamsAndThumbnails:
+SELECT VideoInfo.id, VideoInfo.title, VideoInfo.channel, VideoInfo.channelId, VideoInfo.duration, VideoInfo.viewCount,
+StreamInfo.id AS streamId, StreamInfo.videoId AS streamVideoId, StreamInfo.url AS streamUrl, StreamInfo.itag, StreamInfo.streamType, StreamInfo.extension, StreamInfo.audioCodec, StreamInfo.videoCodec, StreamInfo.quality, StreamInfo.bitrate, StreamInfo.fps, StreamInfo.expiresInSeconds,
+ThumbnailInfo.id AS thumbnailId, ThumbnailInfo.width, ThumbnailInfo.height, ThumbnailInfo.url AS thumbnailUrl, ThumbnailInfo.videoId AS thumbnailVideoId
+FROM VideoInfo
+INNER JOIN StreamInfo ON VideoInfo.id = StreamInfo.videoId
+INNER JOIN ThumbnailInfo ON VideoInfo.id = ThumbnailInfo.videoId;
+
+deleteVideoInfo:
+DELETE
+FROM VideoInfo
+WHERE id = ?;

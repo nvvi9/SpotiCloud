@@ -1,0 +1,21 @@
+CREATE TABLE ThumbnailInfo (
+  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT DEFAULT 1,
+  width INTEGER NOT NULL,
+  height INTEGER NOT NULL,
+  url TEXT NOT NULL,
+  videoId TEXT NOT NULL,
+  FOREIGN KEY (videoId) REFERENCES VideoInfo(id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS index_thumbnail_info_video_id ON ThumbnailInfo(videoId);
+
+insertThumbnailInfo {
+  INSERT OR REPLACE
+  INTO ThumbnailInfo(width, height, url, videoId)
+  VALUES (?, ?, ?, ?);
+
+  SELECT * FROM ThumbnailInfo WHERE id = last_inserted_rowid() LIMIT 1;
+}
+
+selectLastInsertedId:
+SELECT last_insert_rowid();

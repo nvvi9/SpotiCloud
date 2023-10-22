@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.sqldelight)
     kotlin("kapt")
 }
 
@@ -61,6 +62,14 @@ android {
     }
 }
 
+sqldelight {
+    databases {
+        create("SpotiCloudDatabase") {
+            packageName.set("com.nvvi9.spoticloud")
+        }
+    }
+}
+
 dependencies {
 
     implementation(libs.core.ktx)
@@ -91,6 +100,9 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     implementation(libs.room.paging)
+    implementation(libs.sqldelight.driver)
+    implementation(libs.sqldelight.coroutines)
+    implementation(libs.sqldelight.paging3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
